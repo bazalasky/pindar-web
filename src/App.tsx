@@ -1,39 +1,16 @@
-import { useEffect, useState } from 'react'
 import './App.css'
+import { Route, Routes } from 'react-router';
+import { Login } from './routes/Login';
+import { Home } from './routes/Home';
+import { RequireAuth } from './auth/RequireAuth';
 
 function App() {
-  const [content, setContent] = useState<string | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        setLoading(true);
-        setError(null);
-        const response = await fetch(import.meta.env.VITE_API_URL);
-
-        if (!response.ok) {
-            throw new Error(`HTTP network error! Status: ${response.status}`);
-        }
-
-        const result = await response.text();
-        setContent(result);
-      } catch (error) {
-        console.error('Error fetching data:', error);
-      }
-      finally {
-        setLoading(false);
-      }
-    }
-    fetchData();
-  }, []);
-
-  if (loading) return <div>Loading records...</div>;
-  if (error) return <div>Error loading data: {error}</div>;
-
   return (
     <>
-      <div>{content}</div>
+      <Routes>
+        <Route path="/login" element={<Login />} />
+        <Route path="/" element={<RequireAuth><Home /></RequireAuth>} />
+      </Routes>
     </>
   )
 }
