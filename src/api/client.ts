@@ -47,3 +47,10 @@ export function createLift(input: CreateLiftInput) {
     body: JSON.stringify(input),
   });
 }
+
+export function createExercise(name: string): Promise<Exercise> {
+  return request('/exercises', {
+    method: 'POST',
+    body: JSON.stringify({ name }),
+  });
+}

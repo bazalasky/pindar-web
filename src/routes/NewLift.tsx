@@ -1,7 +1,7 @@
 import { type Exercise, type CreateLiftInput } from '../api/types';
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router';
-import { getExercises, createLift } from '../api/client';
+import { getExercises, createLift, createExercise } from '../api/client';
 import { toSeconds } from '../lib/duration';
 
 type SetRow = {
@@ -25,6 +25,9 @@ export function NewLift() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const [submitting, setSubmitting] = useState(false);
+    const [createExerciseInput, setCreateExerciseInput] = useState('');
+    const [createExerciseLoading, setCreateExerciseLoading] = useState(false);
+    const [createExerciseError, setCreateExerciseError] = useState<string | null>(null);
 
     useEffect(() => {
         const fetchExercises = async () => {
@@ -52,6 +55,30 @@ export function NewLift() {
 
     function updateSet(key: string, patch: Partial<Omit<SetRow, 'key'>>) {
         setSets(sets => sets.map(set => set.key === key ? { ...set, ...patch } : set));
+    }
+
+    async function handleCreateExercise(name: string) {
+        const trimmed = name.trim();
+        if (!trimmed) {
+            setCreateExerciseError('Exercise name cannot be empty');
+            return;
+        }
+        if (exercises.some(exercise => exercise.name.toLowerCase() === trimmed.toLowerCase())) {
+            setCreateExerciseInput('');
+            setCreateExerciseError('Exercise already exists');
+            return;
+        }
+        try {
+            setCreateExerciseError(null);
+            setCreateExerciseLoading(true);
+            const res = await createExercise(trimmed);
+            setExercises(prev => [...prev, res].sort((a, b) => a.name.localeCompare(b.name)));
+            setCreateExerciseInput('');
+        } catch (err) {
+            setCreateExerciseError(`Error creating exercise: ${err instanceof Error ? err.message : String(err)}`);
+        } finally {
+            setCreateExerciseLoading(false);
+        }
     }
 
     async function handleSubmit(ev: React.SubmitEvent<HTMLFormElement>) {
@@ -130,8 +157,20 @@ export function NewLift() {
                 </div>
                 <div>
                     <h2>Sets</h2>
+                    <label>
+                        New Exercise:
+                    <input type="text" value={createExerciseInput} onChange={e => setCreateExerciseInput(e.target.value)} onKeyDown={e => {
+                        if (e.key === 'Enter') {
+                            e.preventDefault();          // stops the form submit
+                            void handleCreateExercise(createExerciseInput);
+                        }
+                    }} />
+                        {createExerciseError && <p style={{ color: 'red' }}>{createExerciseError}</p>}
+                    </label>
+                    <button type="button" onClick={() => void handleCreateExercise(createExerciseInput)} disabled={createExerciseLoading}>Create Exercise</button>
                     {sets.map((set) => (
                         <div key={set.key}>
+
                             <label>
                                 Exercise:
                                 <select value={set.exerciseId} onChange={e => updateSet(set.key, { exerciseId: e.target.value })} required>
