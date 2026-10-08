@@ -2,6 +2,7 @@ import { useAuth } from '../auth/AuthContext';
 import { type Activity } from '../api/types';
 import { useState, useEffect } from 'react';
 import { getActivities } from '../api/client';
+import { formatDuration } from '../lib/duration';
 
 export function Home() {
     const { logout } = useAuth();
@@ -48,7 +49,7 @@ export function Home() {
                 <div key={activity.id}>
                     <p>Activity Type: {activity.activityType}</p>
                     <p>Date: {dateFormatter(activity.date)}</p>
-                    <p>Duration (seconds): {activity.durationSeconds}</p>
+                    <p>Duration: {formatDuration(activity.durationSeconds)}</p>
                     <p>Notes: {activity.notes}</p>
                     <p>Bodyweight: {activity.bodyweight}</p>
 

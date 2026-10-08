@@ -23,16 +23,36 @@ teach-back before moving on.
 npm run dev        # vite, port 5173
 npm run build      # tsc -b && vite build - typecheck runs as part of build
 npm run lint       # eslint . (no --fix, unlike the backend)
+npm test           # vitest run - one shot, this is the CI-safe one
+npm run test:watch # vitest - watch mode, never exits
 npm run preview    # serve the production build locally
 ```
 
+`npm run dev` needs the backend running (`npm run start:dev` in `backend/`), since
+`VITE_API_URL` points at `localhost:3000`.
+
 ## Current state
 
-Vite + React 19 + TypeScript. `src/` is the unmodified Vite template plus a hello-world fetch
-against the API - `App.tsx`, `main.tsx`, two CSS files.
+Vite + React 19 + TypeScript. Layout as of 2026-10-08:
 
-**No router, no data-fetching library, no state management, no test runner yet.** Adding any of
-those is a design decision that belongs in ROADMAP.md before it lands in `package.json`.
+```
+src/api/      client.ts (the only file that attaches Authorization), types.ts (hand-written)
+src/auth/     AuthContext, AuthProvider, RequireAuth, tokenStorage.ts (only localStorage caller)
+src/lib/      duration.ts + duration.test.ts
+src/routes/   Login, Home, NewLift
+```
+
+**React Router v8** (`react-router` - v7 merged `react-router-dom` in) and **Vitest 5** are in.
+Still deliberately absent: **no data-fetching library, no state management, no form library.**
+Adding any of those is a design decision that belongs in ROADMAP.md before it lands in
+`package.json` - the reasoning for each deferral is recorded there, including the specific
+trigger for adopting TanStack Query (a stale list after a mutation).
+
+Two gotchas the file layout does not show. `src/api/types.ts` is maintained **by hand** and
+`request<T>` is a type assertion, not a check - a wrong type there fails silently, so verify
+against a real response. And the frontend is **stricter than the backend**: TypeScript 6
+defaults `strict` to true and this repo sets no override, while the backend sets
+`noImplicitAny: false`. Also no prettier integration here, unlike the backend.
 
 ## Talking to the API
 

@@ -2,6 +2,7 @@ import { type Exercise, type CreateLiftInput } from '../api/types';
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router';
 import { getExercises, createLift } from '../api/client';
+import { toSeconds } from '../lib/duration';
 
 type SetRow = {
     key: string;
@@ -14,7 +15,9 @@ type SetRow = {
 export function NewLift() {
     const navigate = useNavigate();
     const [exercises, setExercises] = useState<Exercise[]>([]);
-    const [durationSeconds, setDurationSeconds] = useState('');
+    const [durationHours, setDurationHours] = useState('');
+    const [durationMinutes, setDurationMinutes] = useState('');
+    const [secondsPart, setSecondsPart] = useState('');
     const [notes, setNotes] = useState('');
     const [date, setDate] = useState('');
     const [bodyweight, setBodyweight] = useState('');
@@ -54,10 +57,15 @@ export function NewLift() {
     async function handleSubmit(ev: React.SubmitEvent<HTMLFormElement>) {
         ev.preventDefault();
         setError(null);
+        const total = toSeconds(Number(durationHours), Number(durationMinutes), Number(secondsPart));
+        if (total === null) {
+            setError('Duration must be greater than 0');
+            return;
+        }
         setSubmitting(true);
         const payload: CreateLiftInput = {
             date: date,
-            durationSeconds: Number(durationSeconds),
+            durationSeconds: total,
             notes: notes || undefined,
             bodyweight: bodyweight || undefined,
             sets: sets.map((set, index) => ({
@@ -92,8 +100,20 @@ export function NewLift() {
                 </div>
                 <div>
                     <label>
-                        Duration (seconds):
-                        <input type="number" value={durationSeconds} onChange={e => setDurationSeconds(e.target.value)} required />
+                        Hours:
+                        <input type="number" min="0" value={durationHours} onChange={e => setDurationHours(e.target.value)} />
+                    </label>
+                </div>
+                <div>
+                    <label>
+                        Minutes:
+                        <input type="number" min="0" max="59" value={durationMinutes} onChange={e => setDurationMinutes(e.target.value)} />
+                    </label>
+                </div>
+                <div>
+                    <label>
+                        Seconds:
+                        <input type="number" min="0" max="59" value={secondsPart} onChange={e => setSecondsPart(e.target.value)} />
                     </label>
                 </div>
                 <div>
