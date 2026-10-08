@@ -9,19 +9,6 @@ export function Home() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
 
-    // const onMountFetchActivities = async () => {
-    //     setError(null);
-
-    //     try {
-    //         const response = await getActivities();
-    //         setActivities(response);
-    //     } catch (err) {
-    //         setError(`Error fetching activities: ${err instanceof Error ? err.message : String(err)}`);
-    //     } finally {
-    //         setLoading(false);
-    //     }
-    // };
-
     useEffect(() => {
         const fetchActivities = async () => {
             setError(null);
