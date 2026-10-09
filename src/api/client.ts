@@ -1,5 +1,5 @@
 import { getToken } from '../auth/tokenStorage';
-import type { Activity, CreateLiftInput, Exercise } from './types';
+import type { Activity, CreateLiftInput, Exercise, CreateRunInput } from './types';
 
 const BASE_URL = import.meta.env.VITE_API_URL;
 
@@ -52,5 +52,12 @@ export function createExercise(name: string): Promise<Exercise> {
   return request('/exercises', {
     method: 'POST',
     body: JSON.stringify({ name }),
+  });
+}
+
+export function createRun(input: CreateRunInput) {
+  return request('/activities/run', {
+    method: 'POST',
+    body: JSON.stringify(input),
   });
 }

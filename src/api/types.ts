@@ -28,3 +28,13 @@ export type CreateLiftInput = {
         rpe?: string;
     }[];
 };
+
+export type CreateRunInput = {
+    date: string;
+    durationSeconds: number;
+    notes?: string;
+    bodyweight?: string;
+    distance?: string;
+    elevation?: number;
+    heartRate?: number;
+};

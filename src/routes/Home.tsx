@@ -3,6 +3,7 @@ import { type Activity } from '../api/types';
 import { useState, useEffect } from 'react';
 import { getActivities } from '../api/client';
 import { formatDuration } from '../lib/duration';
+import { Link } from 'react-router';
 
 export function Home() {
     const { logout } = useAuth();
@@ -34,6 +35,8 @@ export function Home() {
     return (
         <div>
             <h1>Pindar</h1>
+            <Link to="/activities/new/lift">Create New Lift Activity</Link>
+            <Link to="/activities/new/run">Create New Run Activity</Link>
 
             {loading ? (
                 <p>Loading activities...</p>
