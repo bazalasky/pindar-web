@@ -1,4 +1,4 @@
-import { useState, type ReactNode } from 'react';
+import { useCallback, useEffect, useState, type ReactNode } from 'react';
 import * as client from '../api/client';
 import { clearToken, getToken, setToken } from './tokenStorage';
 import { AuthContext } from './AuthContext';
@@ -12,10 +12,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setTokenState(access_token); // trigger a re-render
   }
 
-  function logout() {
+  const logout = useCallback(() => {
     clearToken();
     setTokenState(null);
-  }
+  }, []);
+
+  useEffect(() => {
+    client.setUnauthorizedHandler(() => logout());
+    return () => client.setUnauthorizedHandler(null);
+  }, [logout]);
 
   return (
     <AuthContext.Provider value={{ token, login, logout }}>

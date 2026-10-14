@@ -3,6 +3,12 @@ import type { Activity, CreateLiftInput, Exercise, CreateRunInput } from './type
 
 const BASE_URL = import.meta.env.VITE_API_URL;
 
+let onUnauthorized: (() => void) | null = null;
+
+export function setUnauthorizedHandler(fn: (() => void) | null) {
+  onUnauthorized = fn;
+}
+
 /** Collapses Nest's two error body shapes into one readable string. */
 function errorMessage(body: unknown, status: number): string {
   const message = (body as { message?: unknown })?.message;
@@ -19,8 +25,11 @@ async function request<T>(path: string, options: RequestInit = {}): Promise<T> {
 
     const res = await fetch(`${BASE_URL}${path}`, {...options, headers});
     if (!res.ok) {
-        const body = await res.json().catch(() => ({}));
-        throw new Error(errorMessage(body, res.status));
+      if (res.status === 401 && token) {
+        onUnauthorized?.();
+      }
+      const body = await res.json().catch(() => ({}));
+      throw new Error(errorMessage(body, res.status));
     }
     if (res.status === 204) return undefined as T;
     return res.json();

@@ -48,6 +48,10 @@ Adding any of those is a design decision that belongs in ROADMAP.md before it la
 `package.json` - the reasoning for each deferral is recorded there, including the specific
 trigger for adopting TanStack Query (a stale list after a mutation).
 
+**401 handling:** `request()` calls a handler set by `setUnauthorizedHandler` (registered by
+`AuthProvider`) on any 401 where a token was sent. Don't clear the token inside `client.ts`
+alone - `RequireAuth` reads React state, so only `logout()` updates both copies.
+
 Two gotchas the file layout does not show. `src/api/types.ts` is maintained **by hand** and
 `request<T>` is a type assertion, not a check - a wrong type there fails silently, so verify
 against a real response. And the frontend is **stricter than the backend**: TypeScript 6
