@@ -54,9 +54,9 @@ alone - `RequireAuth` reads React state, so only `logout()` updates both copies.
 
 Two gotchas the file layout does not show. `src/api/types.ts` is maintained **by hand** and
 `request<T>` is a type assertion, not a check - a wrong type there fails silently, so verify
-against a real response. And the frontend is **stricter than the backend**: TypeScript 6
-defaults `strict` to true and this repo sets no override, while the backend sets
-`noImplicitAny: false`. Also no prettier integration here, unlike the backend.
+against a real response. TypeScript 6 defaults `strict` to true and this repo sets no override;
+the backend matches as of 2026-10-25 (`strict: true`). Also no prettier integration here,
+unlike the backend.
 
 ## Talking to the API
 
