@@ -42,6 +42,10 @@ export function login(email: string, password: string) {
   });
 }
 
+export function pingHealth() {
+  return request<{status: string}>('/health');
+}
+
 export function getActivities() {
   return request<Activity[]>('/activities')
 }
