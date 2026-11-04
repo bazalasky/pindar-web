@@ -22,3 +22,6 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Agent context files (kept locally, not tracked)
+AGENTS.md
